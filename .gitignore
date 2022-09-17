@@ -132,4 +132,9 @@ dmypy.json
 # Images
 *.jpg
 
+# Models
+models/files/
+*.h5
+
 /logs
+*.h5
