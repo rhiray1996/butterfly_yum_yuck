@@ -9,9 +9,9 @@ import pandas as pd
 from model import ModelCreation
 from keras.losses import CategoricalCrossentropy
 from keras.optimizers import Adam
-from keras.metrics import Precision, Recall, AUC, accuracy
+from keras.metrics import Precision, Recall, AUC
 from tensorflow.python.keras.callbacks import ModelCheckpoint, CSVLogger, ReduceLROnPlateau, EarlyStopping, TensorBoard
-
+import matplotlib.pyplot as plt
 class Training():
     
     
@@ -53,7 +53,7 @@ class Training():
         """ Model """
         mc = ModelCreation()
         self.model = mc.custom_model((ct.H, ct.W, 3), 6)
-        self.model.compile(loss=CategoricalCrossentropy(), optimizer = Adam(lr), metrics=[accuracy, AUC(), Recall(), Precision()])
+        self.model.compile(loss=CategoricalCrossentropy(), optimizer = Adam(lr), metrics=['accuracy', AUC(), Recall(), Precision()])
         
         callbacks = [
             ModelCheckpoint(self.model_path, verbose = 1, save_best_only = True),
@@ -63,17 +63,25 @@ class Training():
             EarlyStopping(monitor='val_loss', patience=20, restore_best_weights=False),
         ]
         
-        self.model.fit(
+        history = self.model.fit(
             train_dataset,
             epochs=num_epochs,
             validation_data=valid_dataset,
             callbacks=callbacks
         )
+        
+        plt.plot(history.history['loss'])
+        plt.plot(history.history['val_loss'])
+        plt.title('model loss')
+        plt.ylabel('loss')
+        plt.xlabel('epoch')
+        plt.legend(['train', 'val'], loc='upper left')
+        plt.show()
 
         
     def read_image(self, path):
         path = path.decode()
-        x = cv2.imread(path, cv2.B)
+        x = cv2.imread(path, cv2.COLOR_BGR2RGB)
         x = x/255.0
         x = x.astype(np.float32)
         return x
