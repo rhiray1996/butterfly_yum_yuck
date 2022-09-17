@@ -130,7 +130,7 @@ dmypy.json
 .pyre/
 
 # Images
-*.jpg
+datasets/
 
 # Models
 models/files/
